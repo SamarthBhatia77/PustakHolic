@@ -4,8 +4,8 @@ import dotenv from "dotenv";
 import { createRouteHandler } from "uploadthing/express";
 import { uploadRouter } from "./uploadthing.js";
 import readersRouter from "./routes/readers.js";
+import librariansRouter from "./routes/librarians.js";
 
-// Load .env from project root (one level up from /api)
 dotenv.config({ path: "../.env" });
 
 const app = express();
@@ -18,14 +18,13 @@ app.use(
   "/api/uploadthing",
   createRouteHandler({
     router: uploadRouter,
-    config: {
-      token: process.env.UPLOADTHING_TOKEN,
-    },
+    config: { token: process.env.UPLOADTHING_TOKEN },
   })
 );
 
 // App routes
 app.use("/api/readers", readersRouter);
+app.use("/api/librarians", librariansRouter);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
