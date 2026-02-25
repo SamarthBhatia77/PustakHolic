@@ -64,6 +64,10 @@ export default function LibrarianProfile() {
     navigate("/librarian-login");
   };
 
+  const handleAddBooks = () => {
+  navigate("/add-books");
+  };
+
   if (!librarian) return null;
 
   const initials = librarian.lName
@@ -87,6 +91,16 @@ export default function LibrarianProfile() {
             <span className="lp-nav-logo-hi">पुस्तक</span>holic
             <span className="lp-nav-badge">Librarian Portal</span>
           </span>
+          <button
+          className="lp-logout-btn"
+          onClick={handleAddBooks}
+          style={{ marginRight: "12px" }}
+          >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 5v14M5 12h14"/>
+          </svg>
+            Add Books
+          </button>
           <button className="lp-logout-btn" onClick={handleLogout}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
