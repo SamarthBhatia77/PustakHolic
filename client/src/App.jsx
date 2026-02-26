@@ -6,6 +6,7 @@ import UserProfile        from "./pages/UserProfile";
 import LibrarianRegister  from "./pages/LibrarianRegister";
 import LibrarianLogin     from "./pages/LibrarianLogin";
 import LibrarianProfile   from "./pages/LibrarianProfile";
+import AddBook from "./pages/AddBook";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/librarian-register" element={<LibrarianRegister />} />
         <Route path="/librarian-login"    element={<LibrarianLogin />} />
         <Route path="/librarian-profile"  element={<LibrarianProfile />} />
+        <Route path="/add-books" element={<AddBook />} />
         <Route path="*"                   element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
