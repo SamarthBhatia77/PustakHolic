@@ -5,7 +5,7 @@ const AllBooks = () => {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/books") // adjust port if needed
+    fetch("http://localhost:5000/api/books") // change if your backend port is different
       .then((res) => res.json())
       .then((data) => setBooks(data))
       .catch((err) => console.error("Error fetching books:", err));
@@ -21,10 +21,24 @@ const AllBooks = () => {
         ) : (
           books.map((book) => (
             <div className="book-card" key={book.id}>
-              <h3>{book.title}</h3>
-              <p><strong>Author:</strong> {book.author}</p>
-              <p><strong>Library:</strong> {book.library_name}</p>
-              <p><strong>Category:</strong> {book.category}</p>
+              <h3 className="book-title">{book.title}</h3>
+
+              <p>
+                <strong>Author:</strong> {book.author}
+              </p>
+
+              <p>
+                <strong>Category:</strong> {book.category}
+              </p>
+
+              <p>
+                <strong>Library:</strong> {book.library_name}
+              </p>
+
+              {/* Borrow Button (UI only) */}
+              <button className="borrow-btn">
+                Borrow Book
+              </button>
             </div>
           ))
         )}

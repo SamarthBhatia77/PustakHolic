@@ -36,3 +36,18 @@
   text-align: center;
   font-size: 18px;
 }
+.borrow-btn {
+  margin-top: 12px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #4a3a6a;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.borrow-btn:hover {
+  background-color: #372854;
+}
