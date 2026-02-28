@@ -3,6 +3,9 @@ import db from "../db.js";
 
 const router = express.Router();
 
+/* ===============================
+   ADD BOOK
+================================ */
 router.post("/add", (req, res) => {
   const {
     lID,
@@ -24,9 +27,7 @@ router.post("/add", (req, res) => {
   const parsedQty = Number(bQty);
 
   db.getConnection((err, connection) => {
-    if (err) {
-      return res.status(500).json({ error: "Database connection failed." });
-    }
+    if (err) return res.status(500).json({ error: "Database connection failed." });
 
     connection.beginTransaction((err) => {
       if (err) {
@@ -34,20 +35,17 @@ router.post("/add", (req, res) => {
         return res.status(500).json({ error: "Failed to start transaction." });
       }
 
-      // 🔹 STEP 1 — Check if publisher exists
       connection.query(
         "SELECT pID FROM publisher WHERE pName = ? LIMIT 1",
         [pName],
         (err, publisherResults) => {
-          if (err) return rollback(connection, res, err, "Publisher lookup failed.");
+          if (err) return rollback(connection, res, err);
 
-          const handleBookInsert = (publisherId) => {
-            // 🔹 STEP 2 — Always create new book row
+          const insertBook = (publisherId) => {
             connection.query(
               "SELECT MAX(bID) AS maxID FROM books",
               (err, maxBookResult) => {
-                if (err)
-                  return rollback(connection, res, err, "Failed to fetch max book ID.");
+                if (err) return rollback(connection, res, err);
 
                 const nextBID = (maxBookResult[0].maxID || 0) + 1;
 
@@ -70,15 +68,12 @@ router.post("/add", (req, res) => {
                     publisherId,
                   ],
                   (err) => {
-                    if (err)
-                      return rollback(connection, res, err, "Book insertion failed.");
+                    if (err) return rollback(connection, res, err);
 
                     connection.commit((err) => {
-                      if (err)
-                        return rollback(connection, res, err, "Commit failed.");
+                      if (err) return rollback(connection, res, err);
 
                       connection.release();
-
                       return res.status(201).json({
                         success: true,
                         message: "Book added successfully.",
@@ -90,16 +85,13 @@ router.post("/add", (req, res) => {
             );
           };
 
-          // 🔹 If publisher exists
           if (publisherResults.length > 0) {
-            handleBookInsert(publisherResults[0].pID);
+            insertBook(publisherResults[0].pID);
           } else {
-            // 🔹 Create new publisher
             connection.query(
               "SELECT MAX(pID) AS maxID FROM publisher",
               (err, maxPubResult) => {
-                if (err)
-                  return rollback(connection, res, err, "Failed to fetch max publisher ID.");
+                if (err) return rollback(connection, res, err);
 
                 const nextPID = (maxPubResult[0].maxID || 0) + 1;
 
@@ -112,10 +104,8 @@ router.post("/add", (req, res) => {
                   insertPublisherSql,
                   [nextPID, pName, pAddress || null, pPhone || null],
                   (err) => {
-                    if (err)
-                      return rollback(connection, res, err, "Publisher insertion failed.");
-
-                    handleBookInsert(nextPID);
+                    if (err) return rollback(connection, res, err);
+                    insertBook(nextPID);
                   }
                 );
               }
@@ -127,14 +117,10 @@ router.post("/add", (req, res) => {
   });
 });
 
-
-router.get("/librarian/:lID", (req, res) => {
-  const lID = Number(req.params.lID);
-
-  if (isNaN(lID)) {
-    return res.status(400).json({ error: "Invalid librarian ID." });
-  }
-
+/* ===============================
+   GET ALL BOOKS (UPDATED)
+================================ */
+router.get("/", (req, res) => {
   const sql = `
     SELECT 
       b.bID,
@@ -145,16 +131,20 @@ router.get("/librarian/:lID", (req, res) => {
       b.bQty,
       p.pName,
       p.pAddress,
-      p.pPhone
+      p.pPhone,
+      l.lName AS librarianName,
+      l.lAge AS librarianAge,
+      l.lAddress AS librarianAddress,
+      l.lPhone AS librarianPhone
     FROM books b
     JOIN publisher p ON b.pID = p.pID
-    WHERE b.lID = ?
+    JOIN librarian l ON b.lID = l.lID
     ORDER BY b.bID DESC
   `;
 
-  db.query(sql, [lID], (err, results) => {
+  db.query(sql, (err, results) => {
     if (err) {
-      console.error("Fetch books error:", err);
+      console.error("Fetch all books error:", err);
       return res.status(500).json({ error: "Failed to fetch books." });
     }
 
@@ -162,13 +152,11 @@ router.get("/librarian/:lID", (req, res) => {
   });
 });
 
-
-// 🔹 Reusable rollback helper
-function rollback(connection, res, error, message) {
+function rollback(connection, res, error) {
   connection.rollback(() => {
     connection.release();
-    console.error(message, error);
-    return res.status(500).json({ error: message });
+    console.error(error);
+    return res.status(500).json({ error: "Database operation failed." });
   });
 }
 

@@ -1,53 +1,97 @@
-.allbooks-container {
-  padding: 40px 60px;
-  min-height: 80vh;
-  background: #f8f9fb;
+.allbooks-root {
+  position: relative;
+  min-height: 100vh;
+  padding: 120px 60px 80px;
+  background: #0b0f1a;
+  color: #fff;
+}
+
+.allbooks-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 0;
+}
+
+.allbooks-section {
+  position: relative;
+  z-index: 1;
+  max-width: 1300px;
+  margin: auto;
 }
 
 .allbooks-title {
-  font-size: 32px;
-  margin-bottom: 30px;
-  text-align: center;
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.allbooks-sub {
+  color: #aaa;
+  margin-bottom: 60px;
 }
 
 .books-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 40px;
 }
 
 .book-card {
-  background: white;
+  background: rgba(255,255,255,0.05);
+  border-radius: 18px;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  transition: transform 0.2s ease;
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
 }
 
-.book-card:hover {
-  transform: translateY(-5px);
+.book-image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-bottom: 20px;
 }
 
-.book-card h3 {
+.book-title {
+  font-size: 22px;
   margin-bottom: 10px;
 }
 
-.no-books {
-  text-align: center;
-  font-size: 18px;
+.book-meta {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #ccc;
 }
+
+.librarian-box {
+  margin-top: 15px;
+  padding: 12px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 12px;
+  font-size: 13px;
+  margin-bottom: 15px;
+}
+
 .borrow-btn {
-  margin-top: 12px;
-  padding: 8px 14px;
+  margin-top: auto;
+  padding: 12px;
   border: none;
-  border-radius: 6px;
-  background-color: #4a3a6a;
-  color: white;
+  border-radius: 10px;
+  background: #c7a24a;
+  color: #000;
+  font-weight: bold;
   cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s ease;
+  transition: 0.3s;
 }
 
 .borrow-btn:hover {
-  background-color: #372854;
+  background: #e5c56a;
+}
+
+.empty-text {
+  color: #aaa;
+  font-size: 18px;
 }
