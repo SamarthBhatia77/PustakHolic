@@ -72,23 +72,6 @@ export default function UserProfile() {
       <div className="rp-blob rp-blob-1" />
       <div className="rp-blob rp-blob-2" />
 
-      {/* ── Navbar ── */}
-      <nav className="rp-nav">
-        <div className="rp-nav-inner">
-          <span className="rp-nav-logo">
-            <span className="rp-nav-logo-hi">पुस्तक</span>holic
-            <span className="rp-nav-badge">Reader Portal</span>
-          </span>
-          <button className="rp-logout-btn" onClick={handleLogout}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-            Logout
-          </button>
-        </div>
-      </nav> 
 
       {/* ── Page layout ── */}
       <div className="rp-body">

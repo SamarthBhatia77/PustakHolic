@@ -84,33 +84,6 @@ export default function LibrarianProfile() {
       <div className="lp-blob lp-blob-1" />
       <div className="lp-blob lp-blob-2" />
 
-      {/* Top nav bar */}
-      <nav className="lp-nav">
-        <div className="lp-nav-inner">
-          <span className="lp-nav-logo">
-            <span className="lp-nav-logo-hi">पुस्तक</span>holic
-            <span className="lp-nav-badge">Librarian Portal</span>
-          </span>
-          <button
-          className="lp-logout-btn"
-          onClick={handleAddBooks}
-          style={{ marginRight: "12px" }}
-          >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M12 5v14M5 12h14"/>
-          </svg>
-            Add Books
-          </button>
-          <button className="lp-logout-btn" onClick={handleLogout}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-            Logout
-          </button>
-        </div>
-      </nav> 
 
       {/* Page body */}
       <div className="lp-body">

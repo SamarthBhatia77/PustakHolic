@@ -7,10 +7,15 @@ import LibrarianRegister  from "./pages/LibrarianRegister";
 import LibrarianLogin     from "./pages/LibrarianLogin";
 import LibrarianProfile   from "./pages/LibrarianProfile";
 import AddBook from "./pages/AddBook";
+import Navbar from "./components/Navbar"
+import Footer from "./components/Footer";
+import AllBooks from "./pages/AllBooks";
+
 
 export default function App() {
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
         <Route path="/"                   element={<Landing />} />
         <Route path="/login"              element={<Login />} />
@@ -21,7 +26,9 @@ export default function App() {
         <Route path="/librarian-profile"  element={<LibrarianProfile />} />
         <Route path="/add-books" element={<AddBook />} />
         <Route path="*"                   element={<Navigate to="/" replace />} />
+        <Route path="/all-books" element={<AllBooks />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }
