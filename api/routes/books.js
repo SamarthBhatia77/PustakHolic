@@ -3,9 +3,9 @@ import db from "../db.js";
 
 const router = express.Router();
 
-/* ===============================
-   ADD BOOK
-================================ */
+/* ===================================================
+   ADD BOOK (Librarian adds a book)
+=================================================== */
 router.post("/add", (req, res) => {
   const {
     lID,
@@ -26,6 +26,10 @@ router.post("/add", (req, res) => {
   const parsedLID = Number(lID);
   const parsedQty = Number(bQty);
 
+  if (isNaN(parsedLID) || isNaN(parsedQty)) {
+    return res.status(400).json({ error: "Invalid numeric values." });
+  }
+
   db.getConnection((err, connection) => {
     if (err) return res.status(500).json({ error: "Database connection failed." });
 
@@ -35,6 +39,7 @@ router.post("/add", (req, res) => {
         return res.status(500).json({ error: "Failed to start transaction." });
       }
 
+      /* -------- STEP 1: Check publisher -------- */
       connection.query(
         "SELECT pID FROM publisher WHERE pName = ? LIMIT 1",
         [pName],
@@ -42,6 +47,7 @@ router.post("/add", (req, res) => {
           if (err) return rollback(connection, res, err);
 
           const insertBook = (publisherId) => {
+            /* -------- STEP 2: Always create new book row -------- */
             connection.query(
               "SELECT MAX(bID) AS maxID FROM books",
               (err, maxBookResult) => {
@@ -50,7 +56,7 @@ router.post("/add", (req, res) => {
                 const nextBID = (maxBookResult[0].maxID || 0) + 1;
 
                 const insertBookSql = `
-                  INSERT INTO books 
+                  INSERT INTO books
                   (bID, lID, bCategory, bTitle, bAuthor, bImage, bQty, pID)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 `;
@@ -74,6 +80,7 @@ router.post("/add", (req, res) => {
                       if (err) return rollback(connection, res, err);
 
                       connection.release();
+
                       return res.status(201).json({
                         success: true,
                         message: "Book added successfully.",
@@ -85,9 +92,11 @@ router.post("/add", (req, res) => {
             );
           };
 
+          /* -------- Publisher Exists -------- */
           if (publisherResults.length > 0) {
             insertBook(publisherResults[0].pID);
           } else {
+            /* -------- Create New Publisher -------- */
             connection.query(
               "SELECT MAX(pID) AS maxID FROM publisher",
               (err, maxPubResult) => {
@@ -105,6 +114,7 @@ router.post("/add", (req, res) => {
                   [nextPID, pName, pAddress || null, pPhone || null],
                   (err) => {
                     if (err) return rollback(connection, res, err);
+
                     insertBook(nextPID);
                   }
                 );
@@ -117,9 +127,9 @@ router.post("/add", (req, res) => {
   });
 });
 
-/* ===============================
-   GET ALL BOOKS (UPDATED)
-================================ */
+/* ===================================================
+   GET ALL BOOKS (Reader View)
+=================================================== */
 router.get("/", (req, res) => {
   const sql = `
     SELECT 
@@ -133,9 +143,8 @@ router.get("/", (req, res) => {
       p.pAddress,
       p.pPhone,
       l.lName AS librarianName,
-      l.lAge AS librarianAge,
-      l.lAddress AS librarianAddress,
-      l.lPhone AS librarianPhone
+      l.lPhone AS librarianPhone,
+      l.lAddress AS librarianAddress
     FROM books b
     JOIN publisher p ON b.pID = p.pID
     JOIN librarian l ON b.lID = l.lID
@@ -152,6 +161,46 @@ router.get("/", (req, res) => {
   });
 });
 
+/* ===================================================
+   GET BOOKS BY LIBRARIAN (Dashboard View)
+=================================================== */
+router.get("/librarian/:lID", (req, res) => {
+  const lID = Number(req.params.lID);
+
+  if (isNaN(lID)) {
+    return res.status(400).json({ error: "Invalid librarian ID." });
+  }
+
+  const sql = `
+    SELECT 
+      b.bID,
+      b.bCategory,
+      b.bTitle,
+      b.bAuthor,
+      b.bImage,
+      b.bQty,
+      p.pName,
+      p.pAddress,
+      p.pPhone
+    FROM books b
+    JOIN publisher p ON b.pID = p.pID
+    WHERE b.lID = ?
+    ORDER BY b.bID DESC
+  `;
+
+  db.query(sql, [lID], (err, results) => {
+    if (err) {
+      console.error("Fetch librarian books error:", err);
+      return res.status(500).json({ error: "Failed to fetch books." });
+    }
+
+    return res.status(200).json({ books: results });
+  });
+});
+
+/* ===================================================
+   ROLLBACK HELPER
+=================================================== */
 function rollback(connection, res, error) {
   connection.rollback(() => {
     connection.release();
