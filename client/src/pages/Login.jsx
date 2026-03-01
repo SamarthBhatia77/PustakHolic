@@ -61,7 +61,7 @@ export default function Login() {
               <rect x="8" y="65" width="56" height="3" rx="1.5" fill="currentColor"/>
             </svg>
           </div>
-          <h1 className="brand-title">पुस्तक<span>holic</span></h1>
+          <h1 className="brand-title"><span className="brand-hi">पुस्तक</span><span className="brand-en">holic</span></h1>
           <p className="brand-sub">Library for the new India</p>
           <div className="left-deco">
             <span>"A room without books is like a body without soul."</span>
@@ -69,8 +69,8 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Right panel — form */}
-        <div className="card-right">
+        {/* Right panel — form (golden theme) */}
+        <div className="card-right reader-right">
           <h2 className="form-title">Welcome back</h2>
           <p className="form-subtitle">Sign in to your reader account</p>
 

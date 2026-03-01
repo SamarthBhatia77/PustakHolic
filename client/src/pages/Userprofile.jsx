@@ -10,6 +10,11 @@ export default function UserProfile() {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const fileInputRef = useRef(null);
+  const [profileEditOpen, setProfileEditOpen] = useState(false);
+  const [profileForm, setProfileForm] = useState({ rName: "", rUserName: "", rAge: "", rAddress: "" });
+  const [profileSaveLoading, setProfileSaveLoading] = useState(false);
+  const [profileError, setProfileError] = useState("");
+  const [profileSuccess, setProfileSuccess] = useState("");
 
   const { startUpload } = useUploadThing("profileImage", {
     onClientUploadComplete: async (res) => {
@@ -59,6 +64,66 @@ export default function UserProfile() {
   const handleLogout = () => {
     sessionStorage.removeItem("reader");
     navigate("/login");
+  };
+
+  const openEditProfile = () => {
+    if (!reader) return;
+    setProfileForm({
+      rName: reader.rName || "",
+      rUserName: reader.rUserName || "",
+      rAge: reader.rAge != null ? String(reader.rAge) : "",
+      rAddress: reader.rAddress || "",
+    });
+    setProfileError("");
+    setProfileSuccess("");
+    setProfileEditOpen(true);
+  };
+
+  const closeEditProfile = () => {
+    setProfileEditOpen(false);
+    setProfileError("");
+    setProfileSuccess("");
+  };
+
+  const handleProfileFormChange = (e) => {
+    const { name, value } = e.target;
+    setProfileForm((prev) => ({ ...prev, [name]: value }));
+    setProfileError("");
+  };
+
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
+    if (!reader) return;
+    setProfileSaveLoading(true);
+    setProfileError("");
+    setProfileSuccess("");
+    try {
+      const res = await fetch("/api/readers/update-profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rID: reader.rID,
+          rName: profileForm.rName.trim(),
+          rUserName: profileForm.rUserName.trim(),
+          rAge: profileForm.rAge === "" ? null : Number(profileForm.rAge),
+          rAddress: profileForm.rAddress.trim() || null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setProfileError(data.error || "Failed to update profile.");
+        return;
+      }
+      const updated = { ...reader, ...data.reader, rImage: reader.rImage };
+      setReader(updated);
+      sessionStorage.setItem("reader", JSON.stringify(updated));
+      setProfileSuccess("Profile updated.");
+      setTimeout(() => closeEditProfile(), 800);
+    } catch {
+      setProfileError("Could not connect. Try again.");
+    } finally {
+      setProfileSaveLoading(false);
+    }
   };
 
   if (!reader) return null;
@@ -123,7 +188,7 @@ export default function UserProfile() {
           </div>
 
           {/* Edit profile */}
-          <button className="rp-edit-btn">
+          <button type="button" className="rp-edit-btn" onClick={openEditProfile}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -188,6 +253,36 @@ export default function UserProfile() {
               icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>}
             />
           </div>
+
+          {/* Edit profile modal */}
+          {profileEditOpen && (
+            <div className="rp-modal-overlay" onClick={closeEditProfile} role="dialog" aria-modal="true" aria-label="Edit profile">
+              <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
+                <button type="button" className="rp-modal-close" onClick={closeEditProfile} aria-label="Close">×</button>
+                <h2 className="rp-modal-title">Edit profile</h2>
+                <form onSubmit={handleProfileSubmit} className="rp-edit-form">
+                  <div className="rp-edit-fields">
+                    <label className="rp-edit-label">Full name</label>
+                    <input name="rName" value={profileForm.rName} onChange={handleProfileFormChange} required />
+                    <label className="rp-edit-label">Username</label>
+                    <input name="rUserName" value={profileForm.rUserName} onChange={handleProfileFormChange} required placeholder="Without @" />
+                    <label className="rp-edit-label">Age</label>
+                    <input name="rAge" type="number" min="1" value={profileForm.rAge} onChange={handleProfileFormChange} placeholder="Optional" />
+                    <label className="rp-edit-label">Address</label>
+                    <input name="rAddress" value={profileForm.rAddress} onChange={handleProfileFormChange} placeholder="Optional" />
+                  </div>
+                  {profileError && <p className="rp-edit-error">{profileError}</p>}
+                  {profileSuccess && <p className="rp-edit-success">{profileSuccess}</p>}
+                  <div className="rp-modal-actions">
+                    <button type="button" className="rp-modal-cancel" onClick={closeEditProfile}>Cancel</button>
+                    <button type="submit" className="rp-modal-save" disabled={profileSaveLoading}>
+                      {profileSaveLoading ? "Saving…" : "Save changes"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>

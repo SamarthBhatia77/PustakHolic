@@ -60,7 +60,7 @@ export default function ReaderRegister() {
               <rect x="8" y="65" width="56" height="3" rx="1.5" fill="currentColor"/>
             </svg>
           </div>
-          <h1 className="brand-title">पुस्तक<span>holic</span></h1>
+          <h1 className="brand-title"><span className="brand-hi">पुस्तक</span><span className="brand-en">holic</span></h1>
           <p className="brand-sub">Library for the new India</p>
           <div className="left-deco">
             <span>"Think before you speak. Read before you think."</span>
@@ -68,8 +68,8 @@ export default function ReaderRegister() {
           </div>
         </div>
 
-        {/* Right panel */}
-        <div className="card-right">
+        {/* Right panel (golden theme) */}
+        <div className="card-right reader-right">
           <h2 className="form-title">Create Reader account</h2>
           <p className="form-subtitle">Start your reading journey with us today!</p>
 
