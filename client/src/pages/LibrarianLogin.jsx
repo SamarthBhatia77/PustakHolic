@@ -60,7 +60,7 @@ export default function LibrarianLogin() {
               <rect x="8"  y="65" width="56" height="3"  rx="1.5" fill="currentColor"/>
             </svg>
           </div>
-          <h1 className="brand-title">Lib<span>rary</span></h1>
+          <h1 className="brand-title"><span className="brand-hi">पुस्तक</span><span className="brand-en">holic</span></h1>
           <p className="brand-sub">Admin Portal</p>
 
           <div className="lib-badge">
@@ -72,7 +72,7 @@ export default function LibrarianLogin() {
 
           <div className="left-deco">
             <span>"Libraries are the temples of learning."</span>
-            <em>— Unknown</em>
+            <em>— Carl T Rowan</em>
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUploadThing } from "../utils/uploadthing";
+import { UploadButton } from "../utils/uploadthing";
 import "@uploadthing/react/styles.css";
 import "./LibrarianProfile.css";
 
@@ -10,6 +11,20 @@ export default function LibrarianProfile() {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const fileInputRef = useRef(null);
+  const [books, setBooks] = useState([]);
+  const [booksLoading, setBooksLoading] = useState(true);
+  const [editingBook, setEditingBook] = useState(null);
+  const [editForm, setEditForm] = useState({ bCategory: "", bTitle: "", bAuthor: "", bQty: 1, pName: "", pAddress: "", pPhone: "" });
+  const [editImage, setEditImage] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [editError, setEditError] = useState("");
+  const [editSuccess, setEditSuccess] = useState("");
+  const [profileEditOpen, setProfileEditOpen] = useState(false);
+  const [profileForm, setProfileForm] = useState({ lName: "", lUserName: "", lAge: "", lPhone: "", lAddress: "" });
+  const [profileSaveLoading, setProfileSaveLoading] = useState(false);
+  const [profileError, setProfileError] = useState("");
+  const [profileSuccess, setProfileSuccess] = useState("");
 
   const { startUpload } = useUploadThing("profileImage", {
     onClientUploadComplete: async (res) => {
@@ -45,6 +60,21 @@ export default function LibrarianProfile() {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    if (!librarian?.lID) return;
+    setBooksLoading(true);
+    fetch(`/api/books/librarian/${librarian.lID}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch books");
+        return res.json();
+      })
+      .then((data) => {
+        setBooks(data.books || []);
+      })
+      .catch(() => setBooks([]))
+      .finally(() => setBooksLoading(false));
+  }, [librarian?.lID]);
+
   const handleAvatarClick = () => {
     setUploadError("");
     fileInputRef.current?.click();
@@ -65,7 +95,175 @@ export default function LibrarianProfile() {
   };
 
   const handleAddBooks = () => {
-  navigate("/add-books");
+    navigate("/add-books");
+  };
+
+  const openEditProfile = () => {
+    if (!librarian) return;
+    setProfileForm({
+      lName: librarian.lName || "",
+      lUserName: librarian.lUserName || "",
+      lAge: librarian.lAge != null ? String(librarian.lAge) : "",
+      lPhone: librarian.lPhone != null ? String(librarian.lPhone) : "",
+      lAddress: librarian.lAddress || "",
+    });
+    setProfileError("");
+    setProfileSuccess("");
+    setProfileEditOpen(true);
+  };
+
+  const closeEditProfile = () => {
+    setProfileEditOpen(false);
+    setProfileError("");
+    setProfileSuccess("");
+  };
+
+  const handleProfileFormChange = (e) => {
+    const { name, value } = e.target;
+    setProfileForm((prev) => ({ ...prev, [name]: value }));
+    setProfileError("");
+  };
+
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
+    if (!librarian) return;
+    setProfileSaveLoading(true);
+    setProfileError("");
+    setProfileSuccess("");
+    try {
+      const res = await fetch("/api/librarians/update-profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lID: librarian.lID,
+          lName: profileForm.lName.trim(),
+          lUserName: profileForm.lUserName.trim(),
+          lAge: profileForm.lAge === "" ? null : Number(profileForm.lAge),
+          lPhone: profileForm.lPhone.trim() || null,
+          lAddress: profileForm.lAddress.trim() || null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setProfileError(data.error || "Failed to update profile.");
+        return;
+      }
+      const updated = { ...librarian, ...data.librarian, lImage: librarian.lImage };
+      setLibrarian(updated);
+      sessionStorage.setItem("librarian", JSON.stringify(updated));
+      setProfileSuccess("Profile updated.");
+      setTimeout(() => closeEditProfile(), 800);
+    } catch {
+      setProfileError("Could not connect. Try again.");
+    } finally {
+      setProfileSaveLoading(false);
+    }
+  };
+
+  const openEditBook = (book) => {
+    setEditingBook(book);
+    setEditForm({
+      bCategory: book.bCategory || "",
+      bTitle: book.bTitle || "",
+      bAuthor: book.bAuthor || "",
+      bQty: Number(book.bQty) || 1,
+      pName: book.pName || "",
+      pAddress: book.pAddress || "",
+      pPhone: book.pPhone || "",
+    });
+    setEditImage(book.bImage || "");
+    setEditError("");
+    setEditSuccess("");
+  };
+
+  const closeEditBook = () => {
+    setEditingBook(null);
+    setEditError("");
+    setEditSuccess("");
+  };
+
+  const handleEditFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: name === "bQty" ? Number(value) || 1 : value }));
+    setEditError("");
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingBook || !librarian) return;
+    setEditLoading(true);
+    setEditError("");
+    setEditSuccess("");
+    try {
+      const res = await fetch(`/api/books/${editingBook.bID}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lID: librarian.lID,
+          bCategory: editForm.bCategory,
+          bTitle: editForm.bTitle,
+          bAuthor: editForm.bAuthor,
+          bQty: editForm.bQty,
+          bImage: editImage || editingBook.bImage || "",
+          pName: editForm.pName,
+          pAddress: editForm.pAddress,
+          pPhone: editForm.pPhone,
+        }),
+      });
+      let data = {};
+      const text = await res.text();
+      try {
+        if (text) data = JSON.parse(text);
+      } catch {
+        console.error("Edit book: server returned non-JSON", res.status, text?.slice(0, 300));
+        setEditError(
+          data?.error ||
+          (res.ok ? "Invalid response from server." : `Server error (${res.status}). Try again.`)
+        );
+        return;
+      }
+      if (!res.ok) {
+        setEditError(data.error || "Failed to update book.");
+        return;
+      }
+      setEditSuccess("Book updated successfully.");
+      const listRes = await fetch(`/api/books/librarian/${librarian.lID}`);
+      const listData = await listRes.json();
+      if (listData.books) setBooks(listData.books);
+      setTimeout(() => closeEditBook(), 1200);
+    } catch (err) {
+      console.error("Edit book error:", err);
+      setEditError("Could not connect. Make sure the server is running and try again.");
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleDeleteBook = async () => {
+    if (!editingBook || !librarian) return;
+    if (!window.confirm(`Delete "${editingBook.bTitle}"? This cannot be undone.`)) return;
+    setDeleteLoading(true);
+    setEditError("");
+    try {
+      const res = await fetch(`/api/books/${editingBook.bID}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lID: librarian.lID }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setEditError(data.error || "Failed to delete book.");
+        return;
+      }
+      closeEditBook();
+      const listRes = await fetch(`/api/books/librarian/${librarian.lID}`);
+      const listData = await listRes.json();
+      if (listData.books) setBooks(listData.books);
+    } catch {
+      setEditError("Could not connect. Try again.");
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   if (!librarian) return null;
@@ -141,7 +339,7 @@ export default function LibrarianProfile() {
           </div>
 
           {/* Edit profile button */}
-          <button className="lp-edit-btn">
+          <button type="button" className="lp-edit-btn" onClick={openEditProfile}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -237,6 +435,181 @@ export default function LibrarianProfile() {
               wide
             />
           </div>
+
+          {/* Books added by this librarian */}
+          <div className="lp-books-section">
+            <div className="lp-books-header">
+              <h2 className="lp-books-title">Books you&apos;ve added</h2>
+              <button type="button" className="lp-add-books-btn" onClick={handleAddBooks}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Add books
+              </button>
+            </div>
+
+            {booksLoading ? (
+              <div className="lp-books-loading">
+                <span className="lp-spinner" />
+                <span>Loading your books…</span>
+              </div>
+            ) : books.length === 0 ? (
+              <div className="lp-books-empty">
+                <div className="lp-books-empty-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                  </svg>
+                </div>
+                <p className="lp-books-empty-title">No books added yet</p>
+                <p className="lp-books-empty-sub">Add your first book to start building your catalog.</p>
+                <button type="button" className="lp-add-books-btn lp-add-books-btn-primary" onClick={handleAddBooks}>
+                  Add your first book
+                </button>
+              </div>
+            ) : (
+              <>
+              <div className="lp-books-grid">
+                {books.slice(0, 3).map((book) => (
+                  <div key={book.bID} className="lp-book-card">
+                    <div className="lp-book-card-cover">
+                      {book.bImage ? (
+                        <img src={book.bImage} alt={book.bTitle} className="lp-book-card-img" />
+                      ) : (
+                        <div className="lp-book-card-placeholder">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                          </svg>
+                          <span>No cover</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="lp-book-card-body">
+                      <h3 className="lp-book-card-title">{book.bTitle}</h3>
+                      <p className="lp-book-card-author">{book.bAuthor}</p>
+                      {book.bCategory && (
+                        <span className="lp-book-card-category">{book.bCategory}</span>
+                      )}
+                      <div className="lp-book-card-meta">
+                        Qty: {book.bQty}
+                        {book.pName && <span> · {book.pName}</span>}
+                      </div>
+                      <button
+                        type="button"
+                        className="lp-book-edit-btn"
+                        onClick={() => openEditBook(book)}
+                        aria-label={`Edit ${book.bTitle}`}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {books.length > 3 && (
+                <div className="lp-books-view-all-wrap">
+                  <button type="button" className="lp-books-view-all-btn" onClick={handleAddBooks}>
+                    View all
+                  </button>
+                </div>
+              )}
+              </>
+            )}
+          </div>
+
+          {/* Edit profile modal */}
+          {profileEditOpen && (
+            <div className="lp-modal-overlay" onClick={closeEditProfile} role="dialog" aria-modal="true" aria-label="Edit profile">
+              <div className="lp-modal lp-modal-profile" onClick={(e) => e.stopPropagation()}>
+                <button type="button" className="lp-modal-close" onClick={closeEditProfile} aria-label="Close">×</button>
+                <h2 className="lp-modal-title">Edit profile</h2>
+                <form onSubmit={handleProfileSubmit} className="lp-edit-form">
+                  <div className="lp-edit-fields">
+                    <label className="lp-edit-label">Full name</label>
+                    <input name="lName" value={profileForm.lName} onChange={handleProfileFormChange} required />
+                    <label className="lp-edit-label">Username</label>
+                    <input name="lUserName" value={profileForm.lUserName} onChange={handleProfileFormChange} required placeholder="Without @" />
+                    <label className="lp-edit-label">Age</label>
+                    <input name="lAge" type="number" min="1" value={profileForm.lAge} onChange={handleProfileFormChange} placeholder="Optional" />
+                    <label className="lp-edit-label">Phone</label>
+                    <input name="lPhone" value={profileForm.lPhone} onChange={handleProfileFormChange} placeholder="Optional" />
+                    <label className="lp-edit-label">Library address</label>
+                    <input name="lAddress" value={profileForm.lAddress} onChange={handleProfileFormChange} placeholder="Optional" />
+                  </div>
+                  {profileError && <p className="lp-edit-error">{profileError}</p>}
+                  {profileSuccess && <p className="lp-edit-success">{profileSuccess}</p>}
+                  <div className="lp-modal-actions">
+                    <button type="button" className="lp-modal-cancel" onClick={closeEditProfile}>Cancel</button>
+                    <button type="submit" className="lp-modal-save" disabled={profileSaveLoading}>
+                      {profileSaveLoading ? "Saving…" : "Save changes"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Edit book modal */}
+          {editingBook && (
+            <div className="lp-modal-overlay" onClick={closeEditBook} role="dialog" aria-modal="true" aria-label="Edit book">
+              <div className="lp-modal" onClick={(e) => e.stopPropagation()}>
+                <button type="button" className="lp-modal-close" onClick={closeEditBook} aria-label="Close">×</button>
+                <h2 className="lp-modal-title">Edit book</h2>
+                <form onSubmit={handleEditSubmit} className="lp-edit-form">
+                  <div className="lp-edit-form-row">
+                    <div className="lp-edit-cover">
+                      <div className="lp-edit-cover-preview">
+                        {editImage ? (
+                          <img src={editImage} alt="Cover" />
+                        ) : (
+                          <span className="lp-edit-cover-placeholder">No cover</span>
+                        )}
+                      </div>
+                      <span className="lp-edit-cover-label">Cover image</span>
+                      <UploadButton
+                        endpoint="bookImage"
+                        onClientUploadComplete={(res) => {
+                          setEditImage(res[0].url);
+                          setEditError("");
+                        }}
+                        onUploadError={(err) => setEditError(err?.message || "Upload failed")}
+                      />
+                    </div>
+                    <div className="lp-edit-fields">
+                      <input name="bTitle" placeholder="Title" value={editForm.bTitle} onChange={handleEditFormChange} required />
+                      <input name="bAuthor" placeholder="Author" value={editForm.bAuthor} onChange={handleEditFormChange} required />
+                      <input name="bCategory" placeholder="Category" value={editForm.bCategory} onChange={handleEditFormChange} />
+                      <input name="bQty" type="number" min={1} placeholder="Quantity" value={editForm.bQty} onChange={handleEditFormChange} required />
+                      <input name="pName" placeholder="Publisher name" value={editForm.pName} onChange={handleEditFormChange} required />
+                      <input name="pPhone" placeholder="Publisher phone" value={editForm.pPhone} onChange={handleEditFormChange} />
+                      <input name="pAddress" placeholder="Publisher address" value={editForm.pAddress} onChange={handleEditFormChange} />
+                    </div>
+                  </div>
+                  {editError && <p className="lp-edit-error">{editError}</p>}
+                  {editSuccess && <p className="lp-edit-success">{editSuccess}</p>}
+                  <div className="lp-modal-actions">
+                    <button type="button" className="lp-modal-cancel" onClick={closeEditBook}>Cancel</button>
+                    <button
+                      type="button"
+                      className="lp-modal-delete"
+                      onClick={handleDeleteBook}
+                      disabled={editLoading || deleteLoading}
+                    >
+                      {deleteLoading ? "Deleting…" : "Delete book"}
+                    </button>
+                    <button type="submit" className="lp-modal-save" disabled={editLoading || deleteLoading}>
+                      {editLoading ? "Saving…" : "Save changes"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
 
         </main>
       </div>

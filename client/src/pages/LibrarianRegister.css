@@ -24,7 +24,14 @@
 
 /* Icon and title accent */
 .lib-left .library-icon { color: #5ecba1; }
-.lib-left .brand-title span { color: #5ecba1; }
+.lib-left .brand-title .brand-hi {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  color: #5ecba1;
+}
+.lib-left .brand-title .brand-en {
+  font-family: 'Playfair Display', serif;
+  color: #e2ede8;
+}
 .lib-left .left-deco { border-left-color: #5ecba1; }
 .lib-left .left-deco em { color: #5ecba1; }
 

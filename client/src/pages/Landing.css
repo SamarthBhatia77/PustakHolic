@@ -1,18 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Noto+Sans+Devanagari:wght@400;700;900&display=swap');
 
-/* ── Variables ── */
+/* ── Variables (match reader profile / gold theme) ── */
 :root {
   --bg: #0a0908;
   --surface: #131110;
   --surface-2: #1c1916;
   --surface-3: #252018;
-  --border: rgba(201, 168, 76, 0.12);
-  --border-hover: rgba(201, 168, 76, 0.28);
+  --border: rgba(201, 168, 76, 0.13);
+  --border-hover: rgba(201, 168, 76, 0.32);
   --gold: #c9a84c;
   --gold-light: #e8c97a;
-  --gold-dim: rgba(201, 168, 76, 0.15);
-  --saffron: #e8772a;
-  --green: #3a7a4a;
+  --gold-dim: rgba(201, 168, 76, 0.1);
   --text: #ede8df;
   --text-muted: #7a7060;
   --text-soft: #b0a890;
@@ -64,12 +62,12 @@ body {
 }
 .land-blob-2 {
   width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(232, 119, 42, 0.05) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.06) 0%, transparent 65%);
   bottom: 200px; left: -150px;
 }
 .land-blob-3 {
   width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(58, 122, 74, 0.06) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(168, 131, 42, 0.05) 0%, transparent 65%);
   top: 60%; right: 10%;
 }
 
@@ -78,7 +76,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(10, 9, 8, 0.85);
+  background: rgba(10, 9, 8, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
@@ -100,6 +98,18 @@ body {
   color: var(--text);
   text-decoration: none;
   letter-spacing: -0.01em;
+}
+.land-logo-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: baseline;
+}
+.land-logo-btn:hover {
+  color: var(--text);
+  opacity: 0.9;
 }
 .logo-hi {
   font-family: 'Noto Sans Devanagari', sans-serif;
@@ -139,6 +149,22 @@ body {
   border-color: var(--gold);
 }
 
+.nav-cta-reader {
+  background: var(--gold-dim);
+  border-color: var(--border-hover);
+  color: var(--gold-light);
+}
+.nav-cta-librarian {
+  background: transparent;
+  border-color: var(--border-hover);
+  color: var(--gold-light);
+}
+.nav-cta-librarian:hover {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+
 /* ── Hero ── */
 .land-hero {
   position: relative;
@@ -168,8 +194,8 @@ body {
 .eyebrow-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: var(--saffron);
-  box-shadow: 0 0 8px var(--saffron);
+  background: var(--gold);
+  box-shadow: 0 0 8px rgba(201, 168, 76, 0.6);
   animation: pulse 2s ease infinite;
 }
 @keyframes pulse {
@@ -354,10 +380,10 @@ body {
   margin-bottom: 4rem;
 }
 .section-tag {
-  font-size: 2rem;
+  font-size: 0.78rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--saffron);
+  color: var(--gold);
   font-weight: 500;
 }
 .section-title {
@@ -492,18 +518,37 @@ body {
   margin-bottom: 2.5rem;
 }
 
-/* ── Footer ── */
+/* ── Footer (golden theme) ── */
 .land-footer {
   position: relative;
   z-index: 1;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
+  background: #131110;
+  border-top: 1px solid rgba(201, 168, 76, 0.18);
   padding: 2rem 2.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+.land-footer .land-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.land-footer .logo-hi {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.land-footer .footer-copy {
+  font-size: 0.82rem;
+  color: var(--text-muted);
 }
 
 .footer-copy {

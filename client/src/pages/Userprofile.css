@@ -89,6 +89,31 @@
   border: 1px solid var(--rp-border-h);
   padding: 0.2rem 0.6rem; border-radius: 999px;
 }
+.rp-nav-actions {
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.rp-nav-btn {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: var(--rp-gold-dim);
+  border: 1px solid var(--rp-border-h);
+  border-radius: 8px;
+  color: var(--rp-gold-light); font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem; font-weight: 500; cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.rp-nav-btn:hover { background: rgba(201,168,76,0.18); border-color: var(--rp-gold); }
+.rp-profile-btn {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: var(--rp-gold-dim);
+  border: 1px solid var(--rp-border-h);
+  border-radius: 8px;
+  color: var(--rp-gold-light); font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem; font-weight: 500; cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.rp-profile-btn:hover { background: rgba(201,168,76,0.18); border-color: var(--rp-gold); }
 .rp-logout-btn {
   display: flex; align-items: center; gap: 0.4rem;
   padding: 0.5rem 1rem;
@@ -311,6 +336,135 @@
 @keyframes rpFade {
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Edit profile modal ── */
+.rp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: rpFade 0.2s var(--rp-ease);
+}
+.rp-modal {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: var(--rp-surface);
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius);
+  padding: 1.75rem 2rem;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+}
+.rp-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--rp-muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+.rp-modal-close:hover {
+  color: var(--rp-text);
+  background: var(--rp-surface-2);
+}
+.rp-modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--rp-text);
+  margin-bottom: 1.25rem;
+}
+.rp-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.rp-edit-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.rp-edit-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rp-muted);
+  margin-top: 0.25rem;
+}
+.rp-edit-label:first-child { margin-top: 0; }
+.rp-edit-fields input {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  background: var(--rp-surface-2);
+  border: 1px solid var(--rp-border);
+  border-radius: 8px;
+  color: var(--rp-text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+}
+.rp-edit-fields input:focus {
+  outline: none;
+  border-color: var(--rp-gold);
+}
+.rp-edit-error { font-size: 0.85rem; color: #f08070; margin: 0; }
+.rp-edit-success { font-size: 0.85rem; color: var(--rp-gold-light); margin: 0; }
+.rp-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.rp-modal-cancel {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--rp-border);
+  border-radius: 8px;
+  color: var(--rp-soft);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.rp-modal-cancel:hover {
+  background: var(--rp-surface-2);
+  border-color: var(--rp-border-h);
+  color: var(--rp-text);
+}
+.rp-modal-save {
+  padding: 0.5rem 1.25rem;
+  background: var(--rp-gold);
+  border: none;
+  border-radius: 8px;
+  color: #1a1305;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+.rp-modal-save:hover:not(:disabled) {
+  background: var(--rp-gold-light);
+}
+.rp-modal-save:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 /* ── Responsive ── */
