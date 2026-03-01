@@ -161,4 +161,35 @@ router.put("/update-profile", (req, res) => {
     });
   });
 });
+
+// DELETE ACCOUNT route
+router.delete("/delete-account", (req, res) => {
+  const { rID, password } = req.body;
+
+  if (!rID || !password) {
+    return res.status(400).json({ error: "Password is required." });
+  }
+
+  db.query(
+    "SELECT rPassword FROM reader WHERE rID = ?",
+    [rID],
+    (err, results) => {
+      if (err) return res.status(500).json({ error: "Internal server error." });
+
+      if (results.length === 0) {
+        return res.status(404).json({ error: "Reader not found." });
+      }
+
+      if (results[0].rPassword !== password) {
+        return res.status(401).json({ error: "Incorrect password." });
+      }
+
+      db.query("DELETE FROM reader WHERE rID = ?", [rID], (err) => {
+        if (err) return res.status(500).json({ error: "Failed to delete account." });
+
+        return res.status(200).json({ message: "Account deleted successfully." });
+      });
+    }
+  );
+});
 export default router;
