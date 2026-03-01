@@ -113,4 +113,52 @@ router.patch("/update-image", (req, res) => {
   );
 });
 
+// UPDATE PROFILE route
+router.put("/update-profile", (req, res) => {
+  const { rID, rUserName, rPassword, rAge, rAddress } = req.body;
+
+  if (!rID || !rUserName) {
+    return res.status(400).json({ error: "Username is required." });
+  }
+
+  const checkSql = `
+    SELECT rID FROM reader
+    WHERE rUserName = ? AND rID != ?
+  `;
+
+  db.query(checkSql, [rUserName, rID], (err, results) => {
+    if (err) return res.status(500).json({ error: "Internal server error." });
+
+    if (results.length > 0) {
+      return res.status(409).json({
+        error: "Username already taken. Please choose another one."
+      });
+    }
+
+    let updateSql;
+    let values;
+
+    if (rPassword && rPassword.trim() !== "") {
+      updateSql = `
+        UPDATE reader
+        SET rUserName = ?, rPassword = ?, rAge = ?, rAddress = ?
+        WHERE rID = ?
+      `;
+      values = [rUserName, rPassword, rAge || null, rAddress || null, rID];
+    } else {
+      updateSql = `
+        UPDATE reader
+        SET rUserName = ?, rAge = ?, rAddress = ?
+        WHERE rID = ?
+      `;
+      values = [rUserName, rAge || null, rAddress || null, rID];
+    }
+
+    db.query(updateSql, values, (err) => {
+      if (err) return res.status(500).json({ error: "Internal server error." });
+
+      return res.status(200).json({ message: "Profile updated successfully." });
+    });
+  });
+});
 export default router;

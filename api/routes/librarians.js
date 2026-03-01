@@ -110,4 +110,52 @@ router.patch("/update-image", (req, res) => {
   });
 });
 
+// UPDATE PROFILE route
+router.put("/update-profile", (req, res) => {
+  const { lID, lUserName, lPassword, lAge, lPhone, lAddress } = req.body;
+
+  if (!lID || !lUserName) {
+    return res.status(400).json({ error: "Username is required." });
+  }
+
+  const checkSql = `
+    SELECT lID FROM librarian
+    WHERE lUserName = ? AND lID != ?
+  `;
+
+  db.query(checkSql, [lUserName, lID], (err, results) => {
+    if (err) return res.status(500).json({ error: "Internal server error." });
+
+    if (results.length > 0) {
+      return res.status(409).json({
+        error: "Username already taken. Please choose another one."
+      });
+    }
+
+    let updateSql;
+    let values;
+
+    if (lPassword && lPassword.trim() !== "") {
+      updateSql = `
+        UPDATE librarian
+        SET lUserName = ?, lPassword = ?, lAge = ?, lPhone = ?, lAddress = ?
+        WHERE lID = ?
+      `;
+      values = [lUserName, lPassword, lAge || null, lPhone || null, lAddress || null, lID];
+    } else {
+      updateSql = `
+        UPDATE librarian
+        SET lUserName = ?, lAge = ?, lPhone = ?, lAddress = ?
+        WHERE lID = ?
+      `;
+      values = [lUserName, lAge || null, lPhone || null, lAddress || null, lID];
+    }
+
+    db.query(updateSql, values, (err) => {
+      if (err) return res.status(500).json({ error: "Internal server error." });
+
+      return res.status(200).json({ message: "Profile updated successfully." });
+    });
+  });
+});
 export default router;

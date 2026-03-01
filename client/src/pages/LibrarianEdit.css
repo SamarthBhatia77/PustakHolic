@@ -1,0 +1,67 @@
+/* Librarian Edit Page */
+
+.edit-container {
+  min-height: 100vh;
+  background: #0d0f0e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "DM Sans", sans-serif;
+  padding: 2rem;
+}
+
+.edit-container h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.9rem;
+  color: #e2ede8;
+  margin-bottom: 1.8rem;
+}
+
+.edit-container form {
+  width: 100%;
+  max-width: 500px;
+  background: #131a17;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(52,168,120,0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.edit-container input {
+  padding: 0.8rem 1rem;
+  background: #1a2420;
+  border: 1px solid rgba(52,168,120,0.2);
+  border-radius: 10px;
+  color: #e2ede8;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.edit-container input:focus {
+  border-color: #2eaa7a;
+}
+
+.edit-container button {
+  padding: 0.8rem;
+  border-radius: 10px;
+  border: none;
+  background: #2eaa7a;
+  color: #0d0f0e;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.edit-container button:hover {
+  background: #5ecba1;
+}
+
+.required {
+  color: #f08070;
+  margin-left: 4px;
+  font-weight: 600;
+}

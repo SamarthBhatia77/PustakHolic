@@ -1,0 +1,67 @@
+/* Reader Edit Page */
+
+.edit-container {
+  min-height: 100vh;
+  background: #0a0908;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "DM Sans", sans-serif;
+  padding: 2rem;
+}
+
+.edit-container h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.9rem;
+  color: #ede8df;
+  margin-bottom: 1.8rem;
+}
+
+.edit-container form {
+  width: 100%;
+  max-width: 500px;
+  background: #131110;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(201,168,76,0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.edit-container input {
+  padding: 0.8rem 1rem;
+  background: #1c1916;
+  border: 1px solid rgba(201,168,76,0.25);
+  border-radius: 10px;
+  color: #ede8df;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.edit-container input:focus {
+  border-color: #c9a84c;
+}
+
+.edit-container button {
+  padding: 0.8rem;
+  border-radius: 10px;
+  border: none;
+  background: #c9a84c;
+  color: #0a0908;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.edit-container button:hover {
+  background: #e8c97a;
+}
+
+.required {
+  color: #f08070;
+  margin-left: 4px;
+  font-weight: 600;
+}

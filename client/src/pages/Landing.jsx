@@ -67,7 +67,7 @@ export default function Landing() {
             <button className="nav-cta" onClick={() => navigate("/login")}>
               Rader Sign In
             </button>
-            <button className="nav-cta" onClick={() => navigate("/login")}>
+            <button className="nav-cta" onClick={() => navigate("/librarian-login")}>
               Librarian Sign In
             </button>
           </div>
