@@ -20,13 +20,7 @@ export default function AllBooks() {
   }, []);
 
   const handleBorrow = async (bID) => {
-    // Get reader from localStorage
-    const stored = localStorage.getItem("reader");
-    if (!stored) {
-      setBorrowStatus((prev) => ({ ...prev, [bID]: "Please log in as a reader to borrow books." }));
-      return;
-    }
-
+    const stored = sessionStorage.getItem("reader");
     const reader = JSON.parse(stored);
     const rID = reader.rID;
 
