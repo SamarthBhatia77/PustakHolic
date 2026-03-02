@@ -59,15 +59,15 @@ export default function Landing() {
 
       <nav className="land-nav">
         <div className="land-nav-inner">
-          <a className="land-logo" href="#">
+          <button type="button" className="land-logo land-logo-btn" onClick={() => navigate("/")} aria-label="Home">
             <span className="logo-hi">पुस्तक</span>holic
-          </a>
+          </button>
           <div className="land-nav-links">
             <a href="#stats">About</a>
-            <button className="nav-cta" onClick={() => navigate("/login")}>
-              Rader Sign In
+            <button type="button" className="nav-cta nav-cta-reader" onClick={() => navigate("/login")}>
+              Reader Sign In
             </button>
-            <button className="nav-cta" onClick={() => navigate("/login")}>
+            <button type="button" className="nav-cta nav-cta-librarian" onClick={() => navigate("/librarian-login")}>
               Librarian Sign In
             </button>
           </div>
@@ -100,7 +100,7 @@ export default function Landing() {
         <p className="hero-footnote">Start your journey with us today!</p>
 
         <div className="hero-spines" aria-hidden="true">
-          {["#c9a84c","#7c4f2a","#3a5a3a","#4a3a6a","#6a2a2a","#2a4a5a","#8a6a2a","#3a3a3a"].map((c, i) => (
+          {["#c9a84c","#a8832a","#7c5c20","#8a6a2a","#6b4e1a","#9a7b35","#5c4515","#3a2d0a"].map((c, i) => (
             <div key={i} className="spine" style={{ background: c, animationDelay: `${i * 0.08}s` }} />
           ))}
         </div>

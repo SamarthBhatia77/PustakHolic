@@ -110,4 +110,38 @@ router.patch("/update-image", (req, res) => {
   });
 });
 
+// UPDATE PROFILE route (name, username, age, phone, address — not password)
+router.patch("/update-profile", (req, res) => {
+  const { lID, lName, lUserName, lAge, lPhone, lAddress } = req.body;
+  if (!lID || !lName || !lUserName) {
+    return res.status(400).json({ error: "lID, name, and username are required." });
+  }
+  const age = lAge != null && lAge !== "" ? Number(lAge) : null;
+  const phone = lPhone != null && lPhone !== "" ? String(lPhone) : null;
+  if (lAge !== undefined && lAge !== "" && isNaN(age)) {
+    return res.status(400).json({ error: "Age must be a number." });
+  }
+  const sql = `
+    UPDATE librarian
+    SET lName = ?, lUserName = ?, lAge = ?, lPhone = ?, lAddress = ?
+    WHERE lID = ?
+  `;
+  db.query(sql, [lName, lUserName, age, phone, lAddress || null, lID], (err) => {
+    if (err) {
+      console.error("DB error:", err);
+      return res.status(500).json({ error: "Internal server error." });
+    }
+    return res.status(200).json({
+      librarian: {
+        lID: Number(lID),
+        lName,
+        lUserName,
+        lAge: age,
+        lPhone: phone,
+        lAddress: lAddress || null,
+      },
+    });
+  });
+});
+
 export default router;

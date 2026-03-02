@@ -1,0 +1,73 @@
+/* Reader footer: same layout as librarian (land-footer) with reader gold/dark colours */
+.rp-footer {
+  position: relative;
+  z-index: 1;
+  background: #131110;
+  border-top: 1px solid rgba(201, 168, 76, 0.12);
+  padding: 2rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.rp-footer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #ede8df;
+  letter-spacing: -0.01em;
+}
+
+.rp-footer-logo-hi {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  color: #c9a84c;
+  font-weight: 700;
+}
+
+.rp-footer .footer-copy {
+  font-size: 0.82rem;
+  color: #7a7060;
+}
+
+@media (max-width: 960px) {
+  .rp-footer {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+/* Library/librarian pages: green (teal) theme */
+.lib-footer {
+  position: relative;
+  z-index: 1;
+  background: #131a17;
+  border-top: 1px solid rgba(46, 170, 122, 0.2);
+  padding: 2rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.lib-footer .logo-hi {
+  color: #5ecba1;
+}
+.lib-footer .land-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #e2ede8;
+  letter-spacing: -0.01em;
+}
+.lib-footer .footer-copy {
+  font-size: 0.82rem;
+  color: #6a8a7a;
+}
+@media (max-width: 960px) {
+  .lib-footer {
+    justify-content: center;
+    text-align: center;
+  }
+}

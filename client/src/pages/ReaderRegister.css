@@ -1,10 +1,9 @@
-/* Register page overrides — layered on top of Login.css */
-
+/* Register page overrides — same reader gold as Login for consistency */
 .register-submit-btn {
-  background: linear-gradient(135deg, #5a8a5a 0%, #3a6a3a 100%);
-  color: #f0f5f0;
+  background: linear-gradient(135deg, var(--gold) 0%, #a8832a 100%);
+  color: #1a1305;
 }
 
 .register-submit-btn:hover:not(:disabled) {
-  box-shadow: 0 6px 24px rgba(90, 138, 90, 0.35);
+  box-shadow: 0 6px 24px rgba(201, 168, 76, 0.3);
 }
