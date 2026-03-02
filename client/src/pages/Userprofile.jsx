@@ -15,6 +15,8 @@ export default function UserProfile() {
   const [profileSaveLoading, setProfileSaveLoading] = useState(false);
   const [profileError, setProfileError] = useState("");
   const [profileSuccess, setProfileSuccess] = useState("");
+  const [currentReads, setCurrentReads] = useState([]);
+  const [readHistory, setReadHistory] = useState([]);
 
   const { startUpload } = useUploadThing("profileImage", {
     onClientUploadComplete: async (res) => {
@@ -44,7 +46,22 @@ export default function UserProfile() {
   useEffect(() => {
     const stored = sessionStorage.getItem("reader");
     if (!stored) navigate("/login");
-    else setReader(JSON.parse(stored));
+    else {
+      const r = JSON.parse(stored);
+      setReader(r);
+
+      // Fetch currently reading
+      fetch(`/api/borrow/current/${r.rID}`)
+        .then((res) => res.json())
+        .then((data) => setCurrentReads(data.currentReads || []))
+        .catch((err) => console.error("Error fetching current reads:", err));
+
+      // Fetch read history
+      fetch(`/api/borrow/history/${r.rID}`)
+        .then((res) => res.json())
+        .then((data) => setReadHistory(data.readHistory || []))
+        .catch((err) => console.error("Error fetching read history:", err));
+    }
   }, [navigate]);
 
   const handleAvatarClick = () => {
@@ -137,14 +154,10 @@ export default function UserProfile() {
       <div className="rp-blob rp-blob-1" />
       <div className="rp-blob rp-blob-2" />
 
-
-      {/* ── Page layout ── */}
       <div className="rp-body">
 
         {/* LEFT SIDEBAR */}
         <aside className="rp-sidebar">
-
-          {/* Big circular avatar */}
           <div
             className={`rp-avatar${uploading ? " rp-avatar--uploading" : ""}`}
             onClick={handleAvatarClick}
@@ -174,11 +187,9 @@ export default function UserProfile() {
           {uploading  && <p className="rp-upload-status">Uploading…</p>}
           {uploadError && <p className="rp-upload-error">{uploadError}</p>}
 
-          {/* Name / username */}
           <h1 className="rp-sidebar__name">{reader.rName}</h1>
           <p className="rp-sidebar__username">@{reader.rUserName}</p>
 
-          {/* Badge */}
           <div className="rp-badge">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
@@ -187,7 +198,6 @@ export default function UserProfile() {
             Registered Reader
           </div>
 
-          {/* Edit profile */}
           <button type="button" className="rp-edit-btn" onClick={openEditProfile}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -198,7 +208,6 @@ export default function UserProfile() {
 
           <hr className="rp-divider" />
 
-          {/* Meta rows */}
           <ul className="rp-meta">
             {reader.rAge && (
               <li>
@@ -252,6 +261,59 @@ export default function UserProfile() {
             <RpCard label="Address" value={reader.rAddress ?? "—"} wide
               icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>}
             />
+          </div>
+
+          {/* ── CURRENTLY READING ── */}
+          <div className="rp-books-section">
+            <h3 className="rp-books-section__title">📖 Currently Reading</h3>
+            {currentReads.length === 0 ? (
+              <p className="rp-books-empty">You are not reading any books right now.</p>
+            ) : (
+              <div className="rp-books-grid">
+                {currentReads.map((book) => (
+                  <div className="rp-book-card" key={book.bID}>
+                    {book.bImage ? (
+                      <img src={book.bImage} alt={book.bTitle} className="rp-book-img" />
+                    ) : (
+                      <div className="rp-book-no-img">No Cover</div>
+                    )}
+                    <div className="rp-book-info">
+                      <p className="rp-book-title">{book.bTitle}</p>
+                      <p className="rp-book-author">{book.bAuthor}</p>
+                      <p className="rp-book-date">Borrowed: {book.issueDate?.slice(0, 10)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ── ALREADY READ ── */}
+          <div className="rp-books-section">
+            <h3 className="rp-books-section__title">✅ Already Read</h3>
+            {readHistory.length === 0 ? (
+              <p className="rp-books-empty">You have not read any books yet.</p>
+            ) : (
+              <div className="rp-books-grid">
+                {readHistory.map((book, i) => (
+                  <div className="rp-book-card" key={`${book.bID}-${i}`}>
+                    {book.bImage ? (
+                      <img src={book.bImage} alt={book.bTitle} className="rp-book-img" />
+                    ) : (
+                      <div className="rp-book-no-img">No Cover</div>
+                    )}
+                    <div className="rp-book-info">
+                      <p className="rp-book-title">{book.bTitle}</p>
+                      <p className="rp-book-author">{book.bAuthor}</p>
+                      <p className="rp-book-date">Borrowed: {book.issueDate?.slice(0, 10)}</p>
+                      <p className="rp-book-date">
+                        Returned: {book.returnDate ? book.returnDate.slice(0, 10) : "Not yet returned"}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Edit profile modal */}
