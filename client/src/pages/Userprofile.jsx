@@ -265,7 +265,7 @@ export default function UserProfile() {
 
           {/* ── CURRENTLY READING ── */}
           <div className="rp-books-section">
-            <h3 className="rp-books-section__title">📖 Currently Reading</h3>
+            <h3 className="rp-books-section__title">Currently Reading</h3>
             {currentReads.length === 0 ? (
               <p className="rp-books-empty">You are not reading any books right now.</p>
             ) : (
@@ -290,7 +290,7 @@ export default function UserProfile() {
 
           {/* ── ALREADY READ ── */}
           <div className="rp-books-section">
-            <h3 className="rp-books-section__title">✅ Already Read</h3>
+            <h3 className="rp-books-section__title">Already Read</h3>
             {readHistory.length === 0 ? (
               <p className="rp-books-empty">You have not read any books yet.</p>
             ) : (
@@ -361,4 +361,4 @@ function RpCard({ icon, label, value, wide }) {
       </div>
     </div>
   );
-}
+}git 
