@@ -55,17 +55,53 @@ Readers can view the profiles of other readers and interact within the platform.
 Readers can post reviews and provide ratings for books they have read. These reviews help other readers make informed decisions and encourage engagement within the reading community.
 
 ## 7. System Architecture
-The platform follows a typical client-server architecture.
+<b>PustakHolic follows a full-stack client–server architecture consisting of three main layers:<b>
 
-### Frontend
-The frontend provides the user interface for readers and librarians to interact with the system, browse books, and manage accounts.
+1.Frontend (Client Application)<br>
+2.Backend (API Server)<br>
+3.Database (MySQL)<br>
 
-### Backend
-The backend handles authentication, database operations, borrow management, return workflows, and defaulter tracking.
+<b>High Level System Architecture:</b>
+                 ┌─────────────────────────┐
+                 │        Frontend         │
+                 │        (Client)         │
+                 │  React + Vite           │
+                 │  UI Components          │
+                 │  Authentication         │
+                 │  Book Browsing          │
+                 │  Reader Community       │
+                 └───────────┬─────────────┘
+                             │ HTTP Requests
+                             │
+                             ▼
+                 ┌─────────────────────────┐
+                 │        Backend          │
+                 │        Node.js          │
+                 │       Express API       │
+                 │                         │
+                 │  Authentication Logic   │
+                 │  Borrow Management      │
+                 │  Review Handling        │
+                 │  Defaulter Management   │
+                 │  Return Requests        │
+                 └───────────┬─────────────┘
+                             │
+                             │ SQL Queries
+                             ▼
+                 ┌─────────────────────────┐
+                 │        Database         │
+                 │         MySQL           │
+                 │                         │
+                 │  Readers                │
+                 │  Librarians             │
+                 │  Books                  │
+                 │  Borrow Records         │
+                 │  Reviews                │
+                 │  Defaulters             │
+                 │  Return Requests        │
+                 └─────────────────────────┘
 
-### Database
-The database stores user information, books, borrowing records, reviews, and return requests.
-
+The system is designed to separate concerns between user interface, business logic, and data persistence.
 ## 8. Database Schema
 
 Attach Schema Image here!
