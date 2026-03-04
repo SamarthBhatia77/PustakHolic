@@ -5,7 +5,7 @@ import "./LibrarianRegister.css";
 
 export default function LibrarianLogin() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ lName: "", lUserName: "", lPassword: "" });
+  const [form, setForm] = useState({ lUserName: "", lPassword: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
@@ -82,24 +82,6 @@ export default function LibrarianLogin() {
           <p className="form-subtitle">Sign in to your librarian account</p>
 
           <form onSubmit={handleSubmit} className="login-form lib-form" noValidate>
-
-            <div className="field-group">
-              <label htmlFor="lName">Full Name</label>
-              <div className="input-wrap">
-                <span className="input-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="8" r="4"/>
-                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-                  </svg>
-                </span>
-                <input
-                  id="lName" name="lName" type="text"
-                  placeholder="Rajesh Kumar"
-                  value={form.lName} onChange={handleChange}
-                  required autoComplete="name"
-                />
-              </div>
-            </div>
 
             <div className="field-group">
               <label htmlFor="lUserName">Username</label>

@@ -10,6 +10,7 @@ import AddBook from "./pages/AddBook";
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer";
 import AllBooks from "./pages/AllBooks";
+import YourReaders from "./pages/YourReaders";
 
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/librarian-register" element={<LibrarianRegister />} />
         <Route path="/librarian-login"    element={<LibrarianLogin />} />
         <Route path="/librarian-profile"  element={<LibrarianProfile />} />
+        <Route path="/your-readers"       element={<YourReaders />} />
         <Route path="/add-books" element={<AddBook />} />
         <Route path="*"                   element={<Navigate to="/" replace />} />
         <Route path="/all-books" element={<AllBooks />} />

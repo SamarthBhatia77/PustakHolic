@@ -469,10 +469,10 @@ export default function LibrarianProfile() {
               </div>
             ) : (
               <>
-              <div className="lp-books-grid">
-                {books.slice(0, 3).map((book) => (
-                  <div key={book.bID} className="lp-book-card">
-                    <div className="lp-book-card-cover">
+              <div className="lp-books-grid lp-books-grid--compact">
+                {books.slice(0, 6).map((book) => (
+                  <div key={book.bID} className="lp-book-card lp-book-card--compact">
+                    <div className="lp-book-card-cover lp-book-card-cover--compact">
                       {book.bImage ? (
                         <img src={book.bImage} alt={book.bTitle} className="lp-book-card-img" />
                       ) : (
@@ -511,7 +511,7 @@ export default function LibrarianProfile() {
                   </div>
                 ))}
               </div>
-              {books.length > 3 && (
+              {books.length > 6 && (
                 <div className="lp-books-view-all-wrap">
                   <button type="button" className="lp-books-view-all-btn" onClick={handleAddBooks}>
                     View all

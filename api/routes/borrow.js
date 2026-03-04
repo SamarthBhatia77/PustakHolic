@@ -76,9 +76,11 @@ router.post("/", (req, res) => {
                 (err) => {
                   if (err) return rollback(connection, res, err);
 
-                  // Step 4: Insert into readHistory
+                  // Step 4: Insert or update readHistory (re-borrow: preserve markedAsRead so book stays in "Already read")
                   connection.query(
-                    "INSERT INTO readHistory (rID, bID, issueDate, returnDate) VALUES (?, ?, ?, NULL)",
+                    `INSERT INTO readHistory (rID, bID, issueDate, returnDate, markedAsRead)
+                     VALUES (?, ?, ?, NULL, 0)
+                     ON DUPLICATE KEY UPDATE issueDate = VALUES(issueDate), returnDate = NULL`,
                     [parsedRID, parsedBID, issueDate],
                     (err) => {
                       if (err) return rollback(connection, res, err);
@@ -131,9 +133,11 @@ router.get("/current/:rID", (req, res) => {
       b.bAuthor,
       b.bCategory,
       b.bImage,
-      cr.issueDate
+      cr.issueDate,
+      COALESCE(rh.markedAsRead, 0) AS markedAsRead
     FROM CurrentRead cr
     JOIN books b ON cr.bID = b.bID
+    LEFT JOIN readHistory rh ON rh.rID = cr.rID AND rh.bID = cr.bID AND rh.returnDate IS NULL
     WHERE cr.rID = ?
     ORDER BY cr.issueDate DESC
   `;
@@ -148,7 +152,7 @@ router.get("/current/:rID", (req, res) => {
 });
 
 /* ===================================================
-   GET READ HISTORY (All books ever borrowed by a reader)
+   GET READ HISTORY (Already read = only books reader marked as read)
 =================================================== */
 router.get("/history/:rID", (req, res) => {
   const rID = Number(req.params.rID);
@@ -168,7 +172,7 @@ router.get("/history/:rID", (req, res) => {
       rh.returnDate
     FROM readHistory rh
     JOIN books b ON rh.bID = b.bID
-    WHERE rh.rID = ?
+    WHERE rh.rID = ? AND (rh.markedAsRead = 1 OR rh.markedAsRead = true)
     ORDER BY rh.issueDate DESC
   `;
 
@@ -177,8 +181,92 @@ router.get("/history/:rID", (req, res) => {
       console.error("Fetch read history error:", err);
       return res.status(500).json({ error: "Failed to fetch read history." });
     }
-    return res.status(200).json({ readHistory: results });
+    return res.status(200).json({ readHistory: results || [] });
   });
+});
+
+/* ===================================================
+   MARK AS READ (Reader marks a current book as read -> shows in Already read)
+=================================================== */
+router.patch("/mark-read", (req, res) => {
+  const { rID, bID } = req.body;
+  const parsedRID = Number(rID);
+  const parsedBID = Number(bID);
+
+  if (!rID || !bID || isNaN(parsedRID) || isNaN(parsedBID)) {
+    return res.status(400).json({ error: "rID and bID are required." });
+  }
+
+  db.query(
+    "UPDATE readHistory SET markedAsRead = 1 WHERE rID = ? AND bID = ? AND returnDate IS NULL",
+    [parsedRID, parsedBID],
+    (err, result) => {
+      if (err) {
+        console.error("Mark read error:", err);
+        return res.status(500).json({ error: "Failed to mark as read." });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: "No current borrow found for this book." });
+      }
+      return res.status(200).json({ success: true, message: "Marked as read." });
+    }
+  );
+});
+
+/* ===================================================
+   REQUEST RETURN (Reader requests return; librarian must verify)
+=================================================== */
+router.post("/request-return", (req, res) => {
+  const { rID, bID } = req.body;
+  const parsedRID = Number(rID);
+  const parsedBID = Number(bID);
+
+  if (!rID || !bID || isNaN(parsedRID) || isNaN(parsedBID)) {
+    return res.status(400).json({ error: "rID and bID are required." });
+  }
+
+  db.query(
+    "SELECT 1 FROM CurrentRead WHERE rID = ? AND bID = ?",
+    [parsedRID, parsedBID],
+    (err, rows) => {
+      if (err) return res.status(500).json({ error: "Database error." });
+      if (!rows || rows.length === 0) {
+        return res.status(404).json({ error: "You do not have this book borrowed." });
+      }
+
+      db.query(
+        "INSERT IGNORE INTO return_requests (rID, bID, status) VALUES (?, ?, 'pending')",
+        [parsedRID, parsedBID],
+        (errInsert) => {
+          if (errInsert) {
+            console.error("Request return error:", errInsert);
+            return res.status(500).json({ error: "Failed to request return." });
+          }
+          return res.status(201).json({ success: true, message: "Return requested. Librarian will verify." });
+        }
+      );
+    }
+  );
+});
+
+/* ===================================================
+   DEFaulter status for a reader (which current books they are defaulter on)
+=================================================== */
+router.get("/defaulter-status/:rID", (req, res) => {
+  const rID = Number(req.params.rID);
+  if (isNaN(rID)) return res.status(400).json({ error: "Invalid reader ID." });
+
+  db.query(
+    "SELECT bID, issue_date AS issueDate, penalty_amount AS penaltyAmount FROM defaulters WHERE rID = ?",
+    [rID],
+    (err, results) => {
+      if (err) {
+        console.error("Defaulter status error:", err);
+        return res.status(500).json({ error: "Failed to fetch defaulter status." });
+      }
+      return res.status(200).json({ defaulters: results || [] });
+    }
+  );
 });
 
 /* ===================================================

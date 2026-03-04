@@ -5,19 +5,19 @@ const router = express.Router();
 
 // LOGIN route
 router.post("/login", (req, res) => {
-  const { rUserName, rPassword, rName } = req.body;
+  const { rUserName, rPassword } = req.body;
 
-  if (!rUserName || !rPassword || !rName) {
-    return res.status(400).json({ error: "All fields are required." });
+  if (!rUserName || !rPassword) {
+    return res.status(400).json({ error: "Username and password are required." });
   }
 
   const sql = `
     SELECT rID, rName, rUserName, rAge, rAddress, rImage
     FROM reader
-    WHERE rUserName = ? AND rPassword = ? AND rName = ?
+    WHERE rUserName = ? AND rPassword = ?
   `;
 
-  db.query(sql, [rUserName, rPassword, rName], (err, results) => {
+  db.query(sql, [rUserName, rPassword], (err, results) => {
     if (err) {
       console.error("DB error:", err);
       return res.status(500).json({ error: "Internal server error." });

@@ -24,7 +24,8 @@ const Navbar = () => {
     "/profile",
     "/librarian-profile",
     "/add-books",
-    "/all-books"
+    "/all-books",
+    "/your-readers"
   ];
 
   if (!allowedPaths.includes(location.pathname)) return null;
@@ -47,6 +48,9 @@ const Navbar = () => {
         </span>
 
         <div className="lp-nav-actions">
+          <button type="button" className="lp-nav-btn" onClick={() => navigate("/your-readers")}>
+            Your readers
+          </button>
           <button type="button" className="lp-profile-btn" onClick={handleProfile}>
             Profile
           </button>

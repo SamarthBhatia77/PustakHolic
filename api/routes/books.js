@@ -333,20 +333,72 @@ router.delete("/:bID", (req, res) => {
     return res.status(400).json({ error: "Invalid book ID or librarian ID." });
   }
 
-  db.query(
-    "DELETE FROM books WHERE bID = ? AND lID = ?",
-    [bID, lID],
-    (err, result) => {
+  db.getConnection((err, connection) => {
+    if (err) return res.status(500).json({ error: "Database connection failed." });
+
+    connection.beginTransaction((err) => {
       if (err) {
-        console.error("Delete book error:", err);
-        return res.status(500).json({ error: "Failed to delete book." });
+        connection.release();
+        return res.status(500).json({ error: "Failed to start transaction." });
       }
-      if (result.affectedRows === 0) {
-        return res.status(403).json({ error: "Book not found or you cannot delete it." });
-      }
-      return res.status(200).json({ success: true, message: "Book deleted." });
-    }
-  );
+
+      // Verify the book belongs to this librarian
+      connection.query(
+        "SELECT bID FROM books WHERE bID = ? AND lID = ?",
+        [bID, lID],
+        (err, rows) => {
+          if (err) return rollback(connection, res, err);
+          if (!rows || rows.length === 0) {
+            connection.rollback(() => {
+              connection.release();
+              res.status(403).json({ error: "Book not found or you cannot delete it." });
+            });
+            return;
+          }
+
+          // Delete from all dependent tables before removing the book
+          const steps = [
+            "DELETE FROM defaulters WHERE bID = ?",
+            "DELETE FROM return_requests WHERE bID = ?",
+            "DELETE FROM CurrentRead WHERE bID = ?",
+            "DELETE FROM readhistory WHERE bID = ?",
+          ];
+
+          const runStep = (index) => {
+            if (index === steps.length) {
+              // Now safe to delete the book
+              connection.query(
+                "DELETE FROM books WHERE bID = ? AND lID = ?",
+                [bID, lID],
+                (err, result) => {
+                  if (err) return rollback(connection, res, err);
+                  if (result.affectedRows === 0) {
+                    connection.rollback(() => {
+                      connection.release();
+                      res.status(403).json({ error: "Book not found or you cannot delete it." });
+                    });
+                    return;
+                  }
+                  connection.commit((err) => {
+                    if (err) return rollback(connection, res, err);
+                    connection.release();
+                    res.status(200).json({ success: true, message: "Book deleted." });
+                  });
+                }
+              );
+              return;
+            }
+            connection.query(steps[index], [bID], (err) => {
+              if (err) return rollback(connection, res, err);
+              runStep(index + 1);
+            });
+          };
+
+          runStep(0);
+        }
+      );
+    });
+  });
 });
 
 /* ===================================================
