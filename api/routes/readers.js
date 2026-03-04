@@ -92,6 +92,35 @@ router.post("/register", (req, res) => {
   });
 });
 
+// GET ALL READERS route
+router.get("/all", (req, res) => {
+  const sql = `SELECT rID, rName, rUserName, rAge, rAddress, rImage FROM reader ORDER BY rID ASC`;
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("DB error:", err);
+      return res.status(500).json({ error: "Internal server error." });
+    }
+    return res.status(200).json({ readers: results });
+  });
+});
+
+// GET SINGLE READER by ID
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = `SELECT rID, rName, rUserName, rAge, rAddress, rImage FROM reader WHERE rID = ?`;
+  db.query(sql, [id], (err, results) => {
+    if (err) {
+      console.error("DB error:", err);
+      return res.status(500).json({ error: "Internal server error." });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Reader not found." });
+    }
+    return res.status(200).json({ reader: results[0] });
+  });
+});
+
+
 // UPDATE IMAGE route
 router.patch("/update-image", (req, res) => {
   const { rID, imageUrl } = req.body;

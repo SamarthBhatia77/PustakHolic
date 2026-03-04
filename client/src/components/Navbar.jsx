@@ -25,6 +25,8 @@ const Navbar = () => {
     "/librarian-profile",
     "/add-books",
     "/all-books",
+    "/all-readers",
+    "/reader/:id" 
     "/your-readers"
   ];
 
@@ -37,6 +39,14 @@ const Navbar = () => {
     else navigate("/profile");
   };
 
+  const handleAddBooks = () => {
+    navigate("/add-books");
+  };
+
+  const handleAllReaders=() => {
+    navigate("/all-readers");
+  }
+
   return librarian ? (
     <nav className="lp-nav">
       <div className="lp-nav-inner">
@@ -48,6 +58,8 @@ const Navbar = () => {
         </span>
 
         <div className="lp-nav-actions">
+          <button type="button" className="lp-profile-btn" onClick={handleAddBooks}>
+            + Add Books
           <button type="button" className="lp-nav-btn" onClick={() => navigate("/your-readers")}>
             Your readers
           </button>
@@ -71,6 +83,13 @@ const Navbar = () => {
         </span>
 
         <div className="rp-nav-actions">
+          <button
+            type="button"
+            className="rp-nav-btn"
+            onClick={handleAllReaders}
+          >
+            View All Readers
+          </button>
           <button
             type="button"
             className="rp-nav-btn"
