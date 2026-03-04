@@ -135,9 +135,9 @@
   display: flex; gap: 2.5rem; align-items: flex-start;
 }
 
-/* ─────────────────────────────
+/* ─────────────────────────────────────────
    LEFT SIDEBAR
-───────────────────────────── */
+───────────────────────────────────────── */
 .rp-sidebar {
   width: 280px; flex-shrink: 0;
   display: flex; flex-direction: column;
@@ -251,9 +251,9 @@
 }
 .rp-meta li svg { width: 15px; height: 15px; color: var(--rp-muted); flex-shrink: 0; margin-top: 2px; }
 
-/* ─────────────────────────────
+/* ─────────────────────────────────────────
    RIGHT MAIN
-───────────────────────────── */
+───────────────────────────────────────── */
 .rp-main {
   flex: 1; display: flex; flex-direction: column; gap: 1.5rem;
   min-width: 0;
@@ -467,6 +467,176 @@
   cursor: not-allowed;
 }
 
+/* ── Currently Reading & Already Read sections ── */
+.rp-books-section {
+  background: var(--rp-surface);
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius);
+  padding: 1.5rem;
+}
+
+.rp-books-section__title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--rp-gold-light);
+  margin-bottom: 1rem;
+}
+
+.rp-books-empty {
+  color: var(--rp-muted);
+  font-size: 0.88rem;
+}
+
+.rp-books-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.rp-book-card {
+  display: flex;
+  gap: 0.75rem;
+  background: var(--rp-surface-2);
+  border: 1px solid var(--rp-border);
+  border-radius: 10px;
+  padding: 0.85rem;
+  width: 260px;
+  transition: border-color 0.2s, transform 0.2s var(--rp-ease);
+}
+.rp-book-card:hover {
+  border-color: var(--rp-border-h);
+  transform: translateY(-2px);
+}
+
+.rp-book-card-top {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.rp-book-status {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  margin-bottom: 0.35rem;
+}
+.rp-book-status--reading {
+  color: var(--rp-gold-light);
+  background: var(--rp-gold-dim);
+  border: 1px solid var(--rp-border-h);
+}
+.rp-book-status--viewed {
+  color: var(--rp-muted);
+  background: var(--rp-surface-3);
+  border: 1px solid var(--rp-border);
+}
+
+.rp-book-img {
+  width: 60px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.rp-book-no-img {
+  width: 60px;
+  height: 80px;
+  background: var(--rp-surface-3);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  color: var(--rp-muted);
+  flex-shrink: 0;
+}
+
+.rp-book-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.rp-book-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--rp-text);
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.rp-book-author {
+  font-size: 0.78rem;
+  color: var(--rp-soft);
+}
+
+.rp-book-date {
+  font-size: 0.72rem;
+  color: var(--rp-muted);
+}
+
+.rp-book-defaulter-ping {
+  font-size: 0.75rem;
+  color: #e8772a;
+  background: rgba(232, 119, 42, 0.12);
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  margin-top: 0.25rem;
+  line-height: 1.35;
+}
+
+.rp-book-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.rp-book-btn {
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  border: 1px solid transparent;
+}
+
+.rp-book-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.rp-book-btn-read {
+  background: var(--rp-gold-dim);
+  border-color: var(--rp-border-h);
+  color: var(--rp-gold-light);
+}
+
+.rp-book-btn-read:hover:not(:disabled) {
+  background: rgba(201, 168, 76, 0.2);
+  border-color: var(--rp-gold);
+}
+
+.rp-book-btn-return {
+  background: rgba(46, 170, 122, 0.12);
+  border-color: rgba(46, 170, 122, 0.3);
+  color: #5ecba1;
+}
+
+.rp-book-btn-return:hover:not(:disabled) {
+  background: rgba(46, 170, 122, 0.2);
+  border-color: #2eaa7a;
+}
+
 /* ── Responsive ── */
 @media (max-width: 860px) {
   .rp-body { flex-direction: column; }
@@ -483,4 +653,5 @@
   .rp-grid { grid-template-columns: 1fr; }
   .rp-card--wide { grid-column: 1; }
   .rp-body { padding: 1.5rem 1rem; }
+  .rp-book-card { width: 100%; }
 }

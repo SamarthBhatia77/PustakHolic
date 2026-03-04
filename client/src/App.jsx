@@ -12,6 +12,7 @@ import Footer from "./components/Footer";
 import AllBooks from "./pages/AllBooks";
 import AllReaders        from "./pages/AllReaders";
 import SelectedReader from "./pages/Selectedreader";
+import YourReaders from "./pages/YourReaders";
 
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/librarian-register" element={<LibrarianRegister />} />
         <Route path="/librarian-login"    element={<LibrarianLogin />} />
         <Route path="/librarian-profile"  element={<LibrarianProfile />} />
+        <Route path="/your-readers"       element={<YourReaders />} />
         <Route path="/add-books" element={<AddBook />} />
         <Route path="/reader/:id"         element={<SelectedReader />} />
         <Route path="*"                   element={<Navigate to="/" replace />} />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UploadButton } from "../utils/uploadthing";
+import "./AllBooks.css";
 import "./AddBook.css";
 
 export default function AddBook() {
@@ -247,14 +248,14 @@ export default function AddBook() {
         </button>
       </div>
     ) : (
-      <div className="ab-grid">
-        {books.map((book) => (
-          <div key={book.bID} className="ab-card">
-            <div className="ab-card-cover">
+      <div className="books-grid">
+        {books.map((book, i) => (
+          <div className="book-card" key={book.bID} style={{ animationDelay: `${i * 0.05}s` }}>
+            <div className="book-cover">
               {book.bImage ? (
-                <img src={book.bImage} alt={book.bTitle} className="ab-card-img" />
+                <img src={book.bImage} alt={book.bTitle} />
               ) : (
-                <div className="ab-card-no-cover">
+                <div className="book-no-cover">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
@@ -263,23 +264,25 @@ export default function AddBook() {
                 </div>
               )}
             </div>
-            <div className="ab-card-body">
-              <h3 className="ab-card-title">{book.bTitle}</h3>
-              <p className="ab-card-author">{book.bAuthor}</p>
-              <div className="ab-card-meta">Qty: {book.bQty}{book.pName && ` · ${book.pName}`}</div>
-              <button
-                type="button"
-                className="ab-card-edit-btn"
-                onClick={() => openEditBook(book)}
-                aria-label={`Edit ${book.bTitle}`}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-                Edit
-              </button>
-            </div>
+            <h3 className="book-title">{book.bTitle}</h3>
+            <p className="book-meta"><strong>Author:</strong> {book.bAuthor}</p>
+            {book.bCategory && (
+              <p className="book-meta"><strong>Category:</strong> {book.bCategory}</p>
+            )}
+            <p className="book-meta"><strong>Publisher:</strong> {book.pName}</p>
+            <p className="book-meta"><strong>Available Qty:</strong> {book.bQty}</p>
+            <button
+              type="button"
+              className="book-edit-btn"
+              onClick={() => openEditBook(book)}
+              aria-label={`Edit ${book.bTitle}`}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              Edit
+            </button>
           </div>
         ))}
       </div>

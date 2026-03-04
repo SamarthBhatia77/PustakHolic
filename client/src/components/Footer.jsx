@@ -15,7 +15,7 @@ const Footer = () => {
   if (blockedPaths.includes(location.pathname)) return null;
 
   const isReaderPage = ["/profile", "/all-books"].includes(location.pathname);
-  const isLibPage = ["/librarian-profile", "/add-books"].includes(location.pathname);
+  const isLibPage = ["/librarian-profile", "/add-books", "/your-readers"].includes(location.pathname);
   const footerClass = isReaderPage ? "rp-footer" : `land-footer${isLibPage ? " lib-footer" : ""}`;
 
   return (

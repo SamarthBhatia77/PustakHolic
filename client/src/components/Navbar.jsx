@@ -27,6 +27,7 @@ const Navbar = () => {
     "/all-books",
     "/all-readers",
     "/reader/:id" 
+    "/your-readers"
   ];
 
   if (!allowedPaths.includes(location.pathname)) return null;
@@ -59,6 +60,8 @@ const Navbar = () => {
         <div className="lp-nav-actions">
           <button type="button" className="lp-profile-btn" onClick={handleAddBooks}>
             + Add Books
+          <button type="button" className="lp-nav-btn" onClick={() => navigate("/your-readers")}>
+            Your readers
           </button>
           <button type="button" className="lp-profile-btn" onClick={handleProfile}>
             Profile

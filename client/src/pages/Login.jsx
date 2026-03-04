@@ -4,7 +4,7 @@ import "./Login.css";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ rName: "", rUserName: "", rPassword: "" });
+  const [form, setForm] = useState({ rUserName: "", rPassword: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
@@ -75,27 +75,6 @@ export default function Login() {
           <p className="form-subtitle">Sign in to your reader account</p>
 
           <form onSubmit={handleSubmit} className="login-form" noValidate>
-            <div className="field-group">
-              <label htmlFor="rName">Full Name</label>
-              <div className="input-wrap">
-                <span className="input-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-                  </svg>
-                </span>
-                <input
-                  id="rName"
-                  name="rName"
-                  type="text"
-                  placeholder="John Doe"
-                  value={form.rName}
-                  onChange={handleChange}
-                  required
-                  autoComplete="name"
-                />
-              </div>
-            </div>
-
             <div className="field-group">
               <label htmlFor="rUserName">Username</label>
               <div className="input-wrap">
