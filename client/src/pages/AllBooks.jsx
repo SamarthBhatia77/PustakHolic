@@ -4,6 +4,7 @@ import "./AllBooks.css";
 export default function AllBooks() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [borrowStatus, setBorrowStatus] = useState({}); // tracks per-book status
 
   useEffect(() => {
     fetch("/api/books")
@@ -18,18 +19,47 @@ export default function AllBooks() {
       });
   }, []);
 
+  const handleBorrow = async (bID) => {
+    const stored = sessionStorage.getItem("reader");
+    const reader = JSON.parse(stored);
+    const rID = reader.rID;
+
+    setBorrowStatus((prev) => ({ ...prev, [bID]: "Borrowing..." }));
+
+    try {
+      const res = await fetch("/api/borrow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rID, bID }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setBorrowStatus((prev) => ({ ...prev, [bID]: "✅ Borrowed successfully!" }));
+        // Decrement quantity in UI
+        setBooks((prev) =>
+          prev.map((b) => (b.bID === bID ? { ...b, bQty: b.bQty - 1 } : b))
+        );
+      } else {
+        setBorrowStatus((prev) => ({ ...prev, [bID]: `❌ ${data.error}` }));
+      }
+    } catch (err) {
+      console.error("Borrow error:", err);
+      setBorrowStatus((prev) => ({ ...prev, [bID]: "❌ Something went wrong." }));
+    }
+  };
+
   return (
     <div className="allbooks-root">
       <div className="allbooks-bg-grid" aria-hidden="true" />
       <div className="allbooks-blob allbooks-blob-1" aria-hidden="true" />
       <div className="allbooks-blob allbooks-blob-2" aria-hidden="true" />
-
       <section className="allbooks-section">
         <h1 className="allbooks-title">All Available Books</h1>
         <p className="allbooks-sub">
           Browse books uploaded by libraries across the network.
         </p>
-
         {loading ? (
           <p className="allbooks-loading">Loading books…</p>
         ) : books.length === 0 ? (
@@ -51,7 +81,6 @@ export default function AllBooks() {
                     </div>
                   )}
                 </div>
-
                 <h3 className="book-title">{book.bTitle}</h3>
                 <p className="book-meta"><strong>Author:</strong> {book.bAuthor}</p>
                 {book.bCategory && (
@@ -59,7 +88,6 @@ export default function AllBooks() {
                 )}
                 <p className="book-meta"><strong>Publisher:</strong> {book.pName}</p>
                 <p className="book-meta"><strong>Available Qty:</strong> {book.bQty}</p>
-
                 <div className="librarian-box">
                   <h4>Librarian Details</h4>
                   <p><strong>Name:</strong> {book.librarianName}</p>
@@ -68,9 +96,20 @@ export default function AllBooks() {
                   {book.librarianPhone && <p><strong>Phone:</strong> {book.librarianPhone}</p>}
                 </div>
 
-                <button type="button" className="borrow-btn">
-                  Borrow Book
+                <button
+                  type="button"
+                  className="borrow-btn"
+                  onClick={() => handleBorrow(book.bID)}
+                  disabled={book.bQty <= 0 || borrowStatus[book.bID] === "Borrowing..." || borrowStatus[book.bID] === "✅ Borrowed successfully!"}
+                >
+                  {book.bQty <= 0 ? "Out of Stock" : borrowStatus[book.bID] === "✅ Borrowed successfully!" ? "Borrowed!" : "Borrow Book"}
                 </button>
+
+                {borrowStatus[book.bID] && (
+                  <p style={{ marginTop: "8px", fontSize: "0.85rem", textAlign: "center" }}>
+                    {borrowStatus[book.bID]}
+                  </p>
+                )}
               </div>
             ))}
           </div>
