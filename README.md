@@ -120,4 +120,4 @@ Attach Schema Image here!
 • Integration with e-book providers<br>
 
 ## Conclusion
-PustakHolic provides a modern solution for connecting librarians and readers through a centralized platform.<br> By combining library management with community interaction features, the system improves accessibility, encourages reading culture, and simplifies the borrowing process for both librarians and readers.
+पुस्तकHolic provides a modern solution for connecting librarians and readers through a centralized platform.<br> By combining library management with community interaction features, the system improves accessibility, encourages reading culture, and simplifies the borrowing process for both librarians and readers.
