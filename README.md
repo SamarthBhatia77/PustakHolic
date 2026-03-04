@@ -61,28 +61,31 @@ Readers can post reviews and provide ratings for books they have read. These rev
 2.Backend (API Server)<br>
 3.Database (MySQL)<br>
 
-<b>High Level System Architecture:</b>
+The system is designed to separate concerns between user interface, business logic, and data persistence.<br>
+<b>High level system architecture:</b><br>
+```
                  ┌─────────────────────────┐
                  │        Frontend         │
                  │        (Client)         │
+                 │                         │
                  │  React + Vite           │
                  │  UI Components          │
                  │  Authentication         │
                  │  Book Browsing          │
                  │  Reader Community       │
                  └───────────┬─────────────┘
-                             │ HTTP Requests
                              │
+                             │ HTTP Requests
                              ▼
                  ┌─────────────────────────┐
                  │        Backend          │
-                 │        Node.js          │
-                 │       Express API       │
+                 │       Node.js API       │
+                 │       Express Server    │
                  │                         │
                  │  Authentication Logic   │
                  │  Borrow Management      │
                  │  Review Handling        │
-                 │  Defaulter Management   │
+                 │  Defaulter Tracking     │
                  │  Return Requests        │
                  └───────────┬─────────────┘
                              │
@@ -100,15 +103,12 @@ Readers can post reviews and provide ratings for books they have read. These rev
                  │  Defaulters             │
                  │  Return Requests        │
                  └─────────────────────────┘
-
-The system is designed to separate concerns between user interface, business logic, and data persistence.
+```
 ## 8. Database Schema
 
 Attach Schema Image here!
 
-## 9. Project Architecture
-
-## 10. Future Improvements
+## 9. Future Improvements
 
 <b>Possible future enhancements include:</b>
 
